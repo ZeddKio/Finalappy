@@ -22,8 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
     long timer = 0;
 
     private Button buttonOpenActivityT;
+    private File file, file1;
+    private OutputStreamWriter outStream, outStream1;
 
 
     @Override
@@ -114,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
         mediaPlayer20.setOnCompletionListener(this);
 
 
-
         bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         recordData = new byte[bufferSize];
 
@@ -130,11 +133,22 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "SoundTest.txt");
+                    outStream = new OutputStreamWriter(new FileOutputStream(file));
+                } catch (IOException e) {
+                    System.out.print("Error creating file!");
+                }
                 Toast.makeText(MainActivity.this, "Playing", Toast.LENGTH_SHORT).show();
                 Play = true;
                 problem.setText("SENT 19 KHZ SIGNAL");
                 time_start = System.currentTimeMillis();
                 play19();
+                try {
+                    outStream.write("\n timer: " + timer + "ms");
+                    outStream.flush();
+                } catch (IOException e) {
+                }
             }
         });
     }
